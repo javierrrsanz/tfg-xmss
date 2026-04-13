@@ -1,11 +1,10 @@
-#include <stdlib.h>
+
 #include <string.h>
 #include <stdint.h>
 
 #include "hash.h"
 #include "hash_address.h"
 #include "params.h"
-#include "randombytes.h"
 #include "wots.h"
 #include "utils.h"
 #include "xmss_commons.h"
@@ -95,35 +94,8 @@ unsigned long long xmss_xmssmt_core_sk_bytes(const xmss_params *params)
     return params->index_bytes + 4 * params->n;
 }
 
-/*
- * Generates a XMSS key pair for a given parameter set.
- * Format sk: [(32bit) index || SK_SEED || SK_PRF || root || PUB_SEED]
- * Format pk: [root || PUB_SEED], omitting algorithm OID.
- */
-int xmss_core_keypair(const xmss_params *params,
-                      unsigned char *pk, unsigned char *sk)
-{
-    /* The key generation procedure of XMSS and XMSSMT is exactly the same.
-       The only important detail is that the right subtree must be selected;
-       this requires us to correctly set the d=1 parameter for XMSS. */
-    return xmssmt_core_keypair(params, pk, sk);
-}
 
-/**
- * Signs a message. Returns an array containing the signature followed by the
- * message and an updated secret key.
- */
-int xmss_core_sign(const xmss_params *params,
-                   unsigned char *sk,
-                   unsigned char *sm, unsigned long long *smlen,
-                   const unsigned char *m, unsigned long long mlen)
-{
-    /* XMSS signatures are fundamentally an instance of XMSSMT signatures.
-       For d=1, as is the case with XMSS, some of the calls in the XMSSMT
-       routine become vacuous (i.e. the loop only iterates once, and address
-       management can be simplified a bit).*/
-    return xmssmt_core_sign(params, sk, sm, smlen, m, mlen);
-}
+
 
 /*
  * Derives a XMSSMT key pair for a given parameter set.
